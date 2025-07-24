@@ -3,11 +3,12 @@ from pettingzoo.mpe import simple_spread_v3
 import random
 
 class MultiAgentEnv:
-    def __init__(self, num_agents=3, max_cycles=25, agent_specializations=None):
+    def __init__(self, num_agents=3, max_cycles=100, agent_specializations=None):
         self.env = simple_spread_v3.parallel_env(
             N=num_agents,
             local_ratio=0.5,
             max_cycles=max_cycles,
+            # render_mode='human',
             continuous_actions=False
         )
         self.num_agents = num_agents

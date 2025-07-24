@@ -59,13 +59,13 @@ class QMIX:
         actions = {}
         if not isinstance(observations, dict):
             observations = observations[0] if isinstance(observations, tuple) else observations
-        # Communication: pass message from previous agent (ring communication)
+        # Communication: pass message from previous agent 
         if messages is None:
             messages = [0.0 for _ in range(self.num_agents)]
         new_messages = []
         for i, agent in enumerate(self.agents):
             obs = observations[f'agent_{i}']
-            msg = messages[i-1] if i > 0 else messages[-1]  # previous agent's message (ring)
+            msg = messages[i-1] if i > 0 else messages[-1]  # previous agent's message
             fingerprint = float(episode_fingerprint)
             if not isinstance(obs, torch.Tensor):
                 obs = torch.FloatTensor(obs)

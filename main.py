@@ -15,7 +15,7 @@ def compute_avg_distance(env):
 
 def main():
     # Make agent_1 blind
-    env = MultiAgentEnv(num_agents=3, max_cycles=25, agent_specializations={'agent_1': 'blind'})
+    env = MultiAgentEnv(num_agents=3, max_cycles=100, agent_specializations={'agent_1': 'blind'})
     
     obs_dim = env.observation_spaces['agent_0'].shape[0]
     act_dim = env.action_spaces['agent_0'].n
@@ -26,14 +26,14 @@ def main():
     episode_rewards, losses = train_qmix(env, qmix, num_episodes=500)
 
     # Robustness/evaluation phase
-    num_episodes = 100
+    num_episodes = 1000
     fail_prob = 0.2
     failed_agent_log = []
     agent_rewards = {f'agent_{i}': [] for i in range(env.num_agents)}
     episode_rewards_eval = []
     agent_distances = []
     for episode in range(num_episodes):
-        obs = env.reset()
+        # obs = env.reset()
         done = False
         failed_agents = []
         if random.random() < fail_prob:
@@ -48,12 +48,12 @@ def main():
             obs, rewards, done, _ = env.step(actions, failed_agents=failed_agents)
             for i in range(env.num_agents):
                 per_agent_reward[f'agent_{i}'] += rewards[f'agent_{i}']
-            episode_reward += sum(rewards.values()) / env.num_agents
+            episode_reward += sum(rewards.values()) / env.num_agents    # average reward per agent
             agent_distances.append(compute_avg_distance(env))
         for i in range(env.num_agents):
             agent_rewards[f'agent_{i}'].append(per_agent_reward[f'agent_{i}'])
         episode_rewards_eval.append(episode_reward)
-        # print(f"Episode {episode}, Failed agents: {failed_agents}, Rewards: {[per_agent_reward[f'agent_{i}'] for i in range(env.num_agents)]}")
+        print(f"Episode {episode}, Failed agents: {failed_agents}, Rewards: {[per_agent_reward[f'agent_{i}'] for i in range(env.num_agents)]}")
 
     # Visualize results
     plot_results(episode_rewards, losses, agent_distances, filename="qmix_training_results.png", agent_rewards=agent_rewards)
